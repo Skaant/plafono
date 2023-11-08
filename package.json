@@ -1,0 +1,15 @@
+{
+  "scripts": {
+    "build": "esbuild src/app.tsx --bundle --minify --sourcemap --target=es2015 --outfile=build/app.js",
+    "start": "esbuild src/app.tsx --bundle --sourcemap --target=es2015 --outfile=app.js --watch"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "esbuild": "0.19.5"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
