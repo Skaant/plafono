@@ -14,16 +14,21 @@ import { getTotal } from "../helpers/getTotal";
 import { Piece } from "../types/Piece";
 import { LaineBois } from "../types/produits/LaineBois";
 import { PlaqueOsb } from "../types/produits/PlaqueOsb";
+import { LongueursTableUI } from "../types/ui/LongueursTableUI";
 import UneLongueur from "./UneLongueur";
 
 export default function LongueursTable({
   piece,
   laineBois,
   plaqueOsb,
+  longueursTableUi,
+  setLongueursTableUi,
 }: {
   piece: Piece;
   laineBois: LaineBois;
   plaqueOsb: PlaqueOsb;
+  longueursTableUi: LongueursTableUI;
+  setLongueursTableUi: (longueursTableUi: LongueursTableUI) => void;
 }) {
   const vis = useMemo(() => VIS_DATA[piece.visIndex], [piece.visIndex]);
   const clou = useMemo(() => CLOUS_DATA[piece.clouIndex], [piece.clouIndex]);
@@ -125,12 +130,48 @@ export default function LongueursTable({
           <th>°</th>
           <th>Longueur</th>
           <th>largeur</th>
-          <th>Nb laines bois</th>
-          <th>Chute laine Long</th>
-          <th>Chute laine larg</th>
-          <th>Nb plaques OSB</th>
-          <th>Chute OSB Long</th>
-          <th>Chute OSB larg</th>
+          <th>
+            Nb laines bois
+            <br />
+            <input
+              checked={longueursTableUi.lainesBoisChutes}
+              onChange={(e) =>
+                setLongueursTableUi({
+                  ...longueursTableUi,
+                  lainesBoisChutes: e.target.checked,
+                })
+              }
+              type="checkbox"
+            />{" "}
+            Chutes
+          </th>
+          {longueursTableUi.lainesBoisChutes && (
+            <>
+              <th>Chute laine Long</th>
+              <th>Chute laine larg</th>
+            </>
+          )}
+          <th>
+            Nb plaques OSB
+            <br />
+            <input
+              checked={longueursTableUi.plaquesOsbChutes}
+              onChange={(e) =>
+                setLongueursTableUi({
+                  ...longueursTableUi,
+                  plaquesOsbChutes: e.target.checked,
+                })
+              }
+              type="checkbox"
+            />{" "}
+            Chutes
+          </th>
+          {longueursTableUi.plaquesOsbChutes && (
+            <>
+              <th>Chute OSB Long</th>
+              <th>Chute OSB larg</th>
+            </>
+          )}
           <th>Nb tassaux 1 vis</th>
           <th>Nb tassaux 2 vis</th>
           <th>Nb vis</th>
@@ -152,6 +193,7 @@ export default function LongueursTable({
             nbTassaux2Vis={nbTassaux2VisParLongueurs[index]}
             nbVis={nbVisParLongueurs[index]}
             nbClous={nbClousParLongueurs[index]}
+            longueursTableUI={longueursTableUi}
           />
         ))}
         <tr>
@@ -165,8 +207,12 @@ export default function LongueursTable({
             <br />
             {nbLotsLaineBois * (laineBois.lot || 1)} = {prixLotsLaineBoisTotal}€
           </td>
-          <td></td>
-          <td></td>
+          {longueursTableUi.lainesBoisChutes && (
+            <>
+              <td></td>
+              <td></td>
+            </>
+          )}
           <td className="cell-md">
             {nbLotsPlaquesOsb > 0 && plaqueOsb.lot
               ? `(${nbPlaquesOsbTotal} => ${nbLotsPlaquesOsb} lot(s) de ${plaqueOsb.lot}) `
@@ -175,8 +221,12 @@ export default function LongueursTable({
             {nbLotsPlaquesOsb * (plaqueOsb.lot || 1)} ={" "}
             {prixLotsPlaquesOsbTotal}€
           </td>
-          <td></td>
-          <td></td>
+          {longueursTableUi.plaquesOsbChutes && (
+            <>
+              <td></td>
+              <td></td>
+            </>
+          )}
           <td className="cell-md">{nbTassaux1VisTotal}</td>
           <td className="cell-md">{nbTassaux2VisTotal}</td>
           <td className="cell-md">

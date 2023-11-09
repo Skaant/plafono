@@ -5,11 +5,16 @@ import { LAINES_BOIS_DATA } from "../data/laines-bois.data";
 import { PLAQUES_OSB_DATA } from "../data/plaques-osb.data";
 import { VIS_DATA } from "../data/vis.data";
 import { Piece } from "../types/Piece";
+import { LongueursTableUI } from "../types/ui/LongueursTableUI";
 import LongueursTable from "./LongueursTable";
 import GlobalVariables from "./VariablesGlobales";
 
 export default function Root() {
   const [piece, setPiece] = useState<Piece>(CUISINE_DATA);
+  const [longueursTableUi, setLongueursTableUi] = useState<LongueursTableUI>({
+    lainesBoisChutes: false,
+    plaquesOsbChutes: false,
+  });
   const laineBois = useMemo(
     () => LAINES_BOIS_DATA[piece.laineBoisIndex],
     [piece.laineBoisIndex]
@@ -36,6 +41,8 @@ export default function Root() {
         piece={piece}
         laineBois={laineBois}
         plaqueOsb={plaqueOsb}
+        longueursTableUi={longueursTableUi}
+        setLongueursTableUi={setLongueursTableUi}
       />
     </div>
   );

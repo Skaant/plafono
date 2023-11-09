@@ -25,7 +25,7 @@ export default function VariablesGlobales({
   clou: Clou;
 }) {
   return (
-    <div>
+    <div id="variables-globales">
       <div>
         <label>Nombre de longueurs NBL : </label>
         {piece.nombreLongueurs}
@@ -92,7 +92,7 @@ export default function VariablesGlobales({
         >
           {[15, 20, 30, 40, 50, 60, 75].map((distance, index) => (
             <option key={index} value={distance}>
-              {distance}
+              {distance} cm maximum
             </option>
           ))}
         </select>
