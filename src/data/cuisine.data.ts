@@ -3,6 +3,7 @@ import { Piece } from "../types/Piece";
 export const CUISINE_DATA: Piece = {
   nom: "Cuisine",
   nombreLongueurs: 8,
+  laineBoisIndex: 0,
   plaqueOsbIndex: 0,
   visIndex: 0,
   clouIndex: 0,

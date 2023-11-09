@@ -1,30 +1,48 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 import { CLOUS_DATA } from "../data/clous.data";
+import { LAINES_BOIS_DATA } from "../data/laines-bois.data";
 import { PLAQUES_OSB_DATA } from "../data/plaques-osb.data";
 import { VIS_DATA } from "../data/vis.data";
 import { getNbClousParLongueurs } from "../helpers/getNbClousParLongueurs";
+import { getNbItemsParLongueur } from "../helpers/getNbItemsParLongueur";
 import { getNbPlaquesOsbParLongueurs } from "../helpers/getNbPlaquesOsbParLongueurs";
 import { getNbTassaux1VisParLongueurs } from "../helpers/getNbTassaux1VisParLongueurs";
 import { getNbTassaux2VisParLongueurs } from "../helpers/getNbTassaux2VisParLongueurs";
 import { getNbVisParLongueurs } from "../helpers/getNbVisParLongueurs";
+import { getNombreDeLots } from "../helpers/getNombreDeLots";
 import { getTotal } from "../helpers/getTotal";
-import { Longueur } from "../types/Longueur";
 import { Piece } from "../types/Piece";
+import { LaineBois } from "../types/produits/LaineBois";
+import { PlaqueOsb } from "../types/produits/PlaqueOsb";
 import UneLongueur from "./UneLongueur";
 
 export default function LongueursTable({
   piece,
-  setPiece,
+  laineBois,
+  plaqueOsb,
 }: {
   piece: Piece;
-  setPiece: (piece: Piece) => void;
+  laineBois: LaineBois;
+  plaqueOsb: PlaqueOsb;
 }) {
-  const plaqueOsb = useMemo(
-    () => PLAQUES_OSB_DATA[piece.plaqueOsbIndex],
-    [piece.plaqueOsbIndex]
-  );
   const vis = useMemo(() => VIS_DATA[piece.visIndex], [piece.visIndex]);
   const clou = useMemo(() => CLOUS_DATA[piece.clouIndex], [piece.clouIndex]);
+  const nbLainesBoisParLongueurs = useMemo(
+    () => getNbItemsParLongueur(piece, plaqueOsb),
+    [piece]
+  );
+  const nbLainesBoisTotal = useMemo(
+    () => getTotal(nbLainesBoisParLongueurs),
+    [nbLainesBoisParLongueurs]
+  );
+  const nbLotsLaineBois = useMemo(
+    () => getNombreDeLots(nbLainesBoisTotal, laineBois.lot),
+    [nbLainesBoisTotal, laineBois]
+  );
+  const prixLotsLaineBoisTotal = useMemo(
+    () => nbLotsLaineBois * laineBois.prix,
+    [nbLotsLaineBois, laineBois]
+  );
   const nbPlaquesOsbParLongueurs = useMemo(
     () => getNbPlaquesOsbParLongueurs(piece, plaqueOsb),
     [piece]
@@ -32,6 +50,14 @@ export default function LongueursTable({
   const nbPlaquesOsbTotal = useMemo(
     () => getTotal(nbPlaquesOsbParLongueurs),
     [nbPlaquesOsbParLongueurs]
+  );
+  const nbLotsPlaquesOsb = useMemo(
+    () => getNombreDeLots(nbPlaquesOsbTotal, plaqueOsb.lot),
+    [nbPlaquesOsbTotal, plaqueOsb]
+  );
+  const prixLotsPlaquesOsbTotal = useMemo(
+    () => nbLotsPlaquesOsb * plaqueOsb.prix,
+    [nbLotsPlaquesOsb, plaqueOsb]
   );
   const nbTassaux1VisParLongueurs = useMemo(
     () =>
@@ -63,6 +89,14 @@ export default function LongueursTable({
     () => getTotal(nbVisParLongueurs),
     [nbVisParLongueurs]
   );
+  const nbLotsVis = useMemo(
+    () => getNombreDeLots(nbVisTotal, vis.lot),
+    [nbVisTotal, vis]
+  );
+  const prixLotsVisTotal = useMemo(
+    () => nbLotsVis * vis.prix,
+    [nbLotsVis, vis]
+  );
   const nbClousParLongueurs = useMemo(
     () =>
       getNbClousParLongueurs(
@@ -73,19 +107,16 @@ export default function LongueursTable({
     [piece]
   );
   const nbClousTotal = useMemo(
-    () => nbClousParLongueurs.reduce((acc, clous) => acc + clous, 0),
+    () => getTotal(nbClousParLongueurs),
     [nbClousParLongueurs]
   );
-  const updateLongueur = useCallback(
-    (index: number, longueur: Longueur) => {
-      const longueurs = [...piece.longueurs];
-      longueurs[index] = longueur;
-      setPiece({
-        ...piece,
-        longueurs,
-      });
-    },
-    [piece]
+  const nbLotsClous = useMemo(
+    () => getNombreDeLots(nbClousTotal, clou.lot),
+    [nbClousTotal, clou]
+  );
+  const prixLotsClousTotal = useMemo(
+    () => nbLotsClous * clou.prix,
+    [nbLotsClous, clou]
   );
   return (
     <table id="longueurs-table">
@@ -93,9 +124,10 @@ export default function LongueursTable({
         <tr>
           <th>°</th>
           <th>Longueur</th>
-          <th>larg MAX</th>
-          <th>larg MIN</th>
-          <th>Δ</th>
+          <th>largeur</th>
+          <th>Nb laines bois</th>
+          <th>Chute laine Long</th>
+          <th>Chute laine larg</th>
           <th>Nb plaques OSB</th>
           <th>Chute OSB Long</th>
           <th>Chute OSB larg</th>
@@ -103,6 +135,7 @@ export default function LongueursTable({
           <th>Nb tassaux 2 vis</th>
           <th>Nb vis</th>
           <th>Nb clous</th>
+          <th>Total</th>
         </tr>
       </thead>
       <tbody>
@@ -111,35 +144,61 @@ export default function LongueursTable({
             key={longueur.id}
             index={index}
             longueur={longueur}
+            laineBois={laineBois}
+            nbLainesBois={nbLainesBoisParLongueurs[index]}
             plaqueOsb={plaqueOsb}
             nbPlaquesOsb={nbPlaquesOsbParLongueurs[index]}
             nbTassaux1Vis={nbTassaux1VisParLongueurs[index]}
             nbTassaux2Vis={nbTassaux2VisParLongueurs[index]}
             nbVis={nbVisParLongueurs[index]}
             nbClous={nbClousParLongueurs[index]}
-            updateLongueur={updateLongueur}
           />
         ))}
         <tr>
           <td>Total</td>
           <td></td>
           <td></td>
+          <td className="cell-md">
+            {nbLotsLaineBois > 0 && laineBois.lot
+              ? `(${nbLainesBoisTotal} => ${nbLotsLaineBois} lot(s) de ${laineBois.lot}) `
+              : ""}
+            <br />
+            {nbLotsLaineBois * (laineBois.lot || 1)} = {prixLotsLaineBoisTotal}€
+          </td>
           <td></td>
           <td></td>
           <td className="cell-md">
-            {nbPlaquesOsbTotal} ={" "}
-            {Math.round(nbPlaquesOsbTotal * plaqueOsb.prix)}€
+            {nbLotsPlaquesOsb > 0 && plaqueOsb.lot
+              ? `(${nbPlaquesOsbTotal} => ${nbLotsPlaquesOsb} lot(s) de ${plaqueOsb.lot}) `
+              : ""}
+            <br />
+            {nbLotsPlaquesOsb * (plaqueOsb.lot || 1)} ={" "}
+            {prixLotsPlaquesOsbTotal}€
           </td>
           <td></td>
           <td></td>
           <td className="cell-md">{nbTassaux1VisTotal}</td>
           <td className="cell-md">{nbTassaux2VisTotal}</td>
           <td className="cell-md">
-            {nbVisTotal} = {(Math.ceil(nbVisTotal / vis.lot) + 1) * vis.prix}€
+            {nbLotsVis > 0 && vis.lot
+              ? `(${nbVisTotal} => ${nbLotsVis} lot(s) de ${vis.lot}) `
+              : ""}
+            <br />
+            {nbLotsVis * (vis.lot || 1)} = {prixLotsVisTotal}€
           </td>
           <td className="cell-md">
-            {nbClousTotal} ={" "}
-            {(Math.ceil(nbClousTotal / clou.lot) + 1) * clou.prix}€
+            {nbLotsClous > 0 && clou.lot
+              ? `(${nbClousTotal} => ${nbLotsClous} lot(s) de ${clou.lot}) `
+              : ""}
+            <br />
+            {nbLotsClous * (clou.lot || 1)} = {prixLotsClousTotal}€
+          </td>
+          <td>
+            {prixLotsLaineBoisTotal +
+              prixLotsPlaquesOsbTotal +
+              prixLotsVisTotal +
+              prixLotsClousTotal}
+            €
           </td>
         </tr>
       </tbody>

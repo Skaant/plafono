@@ -1,21 +1,59 @@
 import React from "react";
 import { CLOUS_DATA } from "../data/clous.data";
+import { LAINES_BOIS_DATA } from "../data/laines-bois.data";
 import { PLAQUES_OSB_DATA } from "../data/plaques-osb.data";
 import { VIS_DATA } from "../data/vis.data";
 import { Piece } from "../types/Piece";
+import { Clou } from "../types/produits/Clou";
+import { LaineBois } from "../types/produits/LaineBois";
+import { PlaqueOsb } from "../types/produits/PlaqueOsb";
+import { Vis } from "../types/produits/Vis";
 
 export default function VariablesGlobales({
   piece,
   setPiece,
+  laineBois,
+  plaqueOsb,
+  vis,
+  clou,
 }: {
   piece: Piece;
   setPiece: (piece: Piece) => void;
+  laineBois: LaineBois;
+  plaqueOsb: PlaqueOsb;
+  vis: Vis;
+  clou: Clou;
 }) {
   return (
     <div>
       <div>
         <label>Nombre de longueurs NBL : </label>
         {piece.nombreLongueurs}
+      </div>
+      <div>
+        <label>Laine de bois : </label>
+        <select
+          value={piece.laineBoisIndex}
+          onChange={(e) =>
+            setPiece({
+              ...piece,
+              laineBoisIndex: parseInt(e.target.value),
+            })
+          }
+        >
+          {LAINES_BOIS_DATA.map((laineBois, index) => (
+            <option key={index} value={index}>
+              {laineBois.nom} - L {laineBois.longueur} x l {laineBois.largeur} x
+              Ep {laineBois.epaisseur} (R {laineBois.resistanceThermique}) -{" "}
+              {laineBois.prix}€
+            </option>
+          ))}
+        </select>{" "}
+        {laineBois.lien && (
+          <a href={laineBois.lien} target="_blank">
+            Voir
+          </a>
+        )}
       </div>
       <div>
         <label>Plaque OSB : </label>
@@ -34,7 +72,12 @@ export default function VariablesGlobales({
               Ep {plaqueOsb.epaisseur} - {plaqueOsb.prix}€
             </option>
           ))}
-        </select>
+        </select>{" "}
+        {plaqueOsb.lien && (
+          <a href={plaqueOsb.lien} target="_blank">
+            Voir
+          </a>
+        )}
       </div>
       <div>
         <label>Distance entre tassaux : </label>
@@ -67,11 +110,16 @@ export default function VariablesGlobales({
         >
           {VIS_DATA.map((vis, index) => (
             <option key={index} value={index}>
-              {vis.nom} - L {vis.longueur} x l {vis.largeur} x par {vis.lot} -{" "}
-              {vis.prix}€
+              {vis.nom}- {vis.prix}€
+              {vis.lot ? ` (${(vis.prix / vis.lot).toFixed(2)}€/u)` : ""}
             </option>
           ))}
-        </select>
+        </select>{" "}
+        {vis.lien && (
+          <a href={vis.lien} target="_blank">
+            Voir
+          </a>
+        )}
       </div>
       <div>
         <label>Clou : </label>
@@ -86,11 +134,16 @@ export default function VariablesGlobales({
         >
           {CLOUS_DATA.map((clou, index) => (
             <option key={index} value={index}>
-              {clou.nom} - L {clou.longueur} x l {clou.largeur} x par {clou.lot}{" "}
-              - {clou.prix}€
+              {clou.nom}- {clou.prix}€
+              {clou.lot ? ` (${(clou.prix / clou.lot).toFixed(2)}€/u)` : ""}
             </option>
           ))}
-        </select>
+        </select>{" "}
+        {clou.lien && (
+          <a href={clou.lien} target="_blank">
+            Voir
+          </a>
+        )}
       </div>
     </div>
   );

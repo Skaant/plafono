@@ -1,66 +1,47 @@
 import React, { useCallback } from "react";
 import { Longueur } from "../types/Longueur";
-import { PlaqueOsb } from "../types/PlaqueOsb";
+import { LaineBois } from "../types/produits/LaineBois";
+import { PlaqueOsb } from "../types/produits/PlaqueOsb";
 
 export default function UneLongueur({
   index,
   longueur,
+  laineBois,
+  nbLainesBois,
   plaqueOsb,
   nbPlaquesOsb,
   nbTassaux1Vis,
   nbTassaux2Vis,
   nbVis,
   nbClous,
-  updateLongueur,
 }: {
   index: number;
   longueur: Longueur;
+  laineBois: LaineBois;
+  nbLainesBois: number;
   plaqueOsb: PlaqueOsb;
   nbPlaquesOsb: number;
   nbTassaux1Vis: number;
   nbTassaux2Vis: number;
   nbVis: number;
   nbClous: number;
-  updateLongueur: (index: number, longueur: Longueur) => void;
 }) {
-  const updateLongueurProp = useCallback(
-    (prop: keyof Longueur, value: number) => {
-      const longueurUpdated = { ...longueur, [prop]: value };
-      updateLongueur(index, longueurUpdated);
-    },
-    [longueur]
-  );
   return (
     <tr className="une-longueur">
       <td>{longueur.id}</td>
+      <td className="cell-md">{longueur.longueur}</td>
       <td className="cell-md">
-        <input
-          type="text"
-          value={longueur.longueur}
-          onChange={(e) =>
-            updateLongueurProp("longueur", parseInt(e.target.value || "0"))
-          }
-        />
+        {longueur.largeurMax}..{longueur.largeurMin} (
+        {longueur.largeurMax - longueur.largeurMin})
+      </td>
+      <td className="cell-md">{nbLainesBois}</td>
+      <td className="cell-md">
+        {laineBois.longueur - (longueur.longueur % laineBois.longueur)}
       </td>
       <td className="cell-md">
-        <input
-          type="text"
-          value={longueur.largeurMax}
-          onChange={(e) =>
-            updateLongueurProp("largeurMax", parseInt(e.target.value || "0"))
-          }
-        />
+        {laineBois.largeur - (longueur.largeurMax % laineBois.largeur)}/
+        {laineBois.largeur - (longueur.largeurMin % laineBois.largeur)}
       </td>
-      <td className="cell-md">
-        <input
-          type="text"
-          value={longueur.largeurMin}
-          onChange={(e) =>
-            updateLongueurProp("largeurMin", parseInt(e.target.value || "0"))
-          }
-        />
-      </td>
-      <td className="cell-sm">{longueur.largeurMax - longueur.largeurMin}</td>
       <td className="cell-md">{nbPlaquesOsb}</td>
       <td className="cell-md">
         {plaqueOsb.longueur - (longueur.longueur % plaqueOsb.longueur)}
