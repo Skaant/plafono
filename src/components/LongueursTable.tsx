@@ -2,6 +2,12 @@ import React, { useCallback, useMemo } from "react";
 import { CLOUS_DATA } from "../data/clous.data";
 import { PLAQUES_OSB_DATA } from "../data/plaques-osb.data";
 import { VIS_DATA } from "../data/vis.data";
+import { getNbClousParLongueurs } from "../helpers/getNbClousParLongueurs";
+import { getNbPlaquesOsbParLongueurs } from "../helpers/getNbPlaquesOsbParLongueurs";
+import { getNbTassaux1VisParLongueurs } from "../helpers/getNbTassaux1VisParLongueurs";
+import { getNbTassaux2VisParLongueurs } from "../helpers/getNbTassaux2VisParLongueurs";
+import { getNbVisParLongueurs } from "../helpers/getNbVisParLongueurs";
+import { getTotal } from "../helpers/getTotal";
 import { Longueur } from "../types/Longueur";
 import { Piece } from "../types/Piece";
 import UneLongueur from "./UneLongueur";
@@ -20,63 +26,49 @@ export default function LongueursTable({
   const vis = useMemo(() => VIS_DATA[piece.visIndex], [piece.visIndex]);
   const clou = useMemo(() => CLOUS_DATA[piece.clouIndex], [piece.clouIndex]);
   const nbPlaquesOsbParLongueurs = useMemo(
-    () =>
-      piece.longueurs.map((longueur) =>
-        Math.ceil(longueur.longueur / plaqueOsb.longueur)
-      ),
+    () => getNbPlaquesOsbParLongueurs(piece, plaqueOsb),
     [piece]
   );
   const nbPlaquesOsbTotal = useMemo(
-    () =>
-      nbPlaquesOsbParLongueurs.reduce((acc, nbPlaques) => acc + nbPlaques, 0),
+    () => getTotal(nbPlaquesOsbParLongueurs),
     [nbPlaquesOsbParLongueurs]
   );
   const nbTassaux1VisParLongueurs = useMemo(
     () =>
-      piece.longueurs.map(
-        (longueur, index) =>
-          (2 +
-            nbPlaquesOsbParLongueurs[index] *
-              Math.ceil(longueur.longueur / piece.distanceEntreTassaux)) *
-          2
-      ),
+      getNbTassaux1VisParLongueurs(piece, nbPlaquesOsbParLongueurs, plaqueOsb),
     [piece]
   );
   const nbTassaux1VisTotal = useMemo(
-    () =>
-      nbTassaux1VisParLongueurs.reduce((acc, nbTassaux) => acc + nbTassaux, 0),
+    () => getTotal(nbTassaux1VisParLongueurs),
     [nbTassaux1VisParLongueurs]
   );
   const nbTassaux2VisParLongueurs = useMemo(
-    () =>
-      piece.longueurs.map(
-        (_, index) => (nbPlaquesOsbParLongueurs[index] - 1) * 2
-      ),
+    () => getNbTassaux2VisParLongueurs(piece, nbPlaquesOsbParLongueurs),
     [piece]
   );
   const nbTassaux2VisTotal = useMemo(
-    () =>
-      nbTassaux2VisParLongueurs.reduce((acc, nbTassaux) => acc + nbTassaux, 0),
+    () => getTotal(nbTassaux2VisParLongueurs),
     [nbTassaux2VisParLongueurs]
   );
   const nbVisParLongueurs = useMemo(
     () =>
-      piece.longueurs.map(
-        (_, index) =>
-          nbTassaux1VisParLongueurs[index] + nbTassaux2VisParLongueurs[index]
+      getNbVisParLongueurs(
+        piece,
+        nbTassaux1VisParLongueurs,
+        nbTassaux2VisParLongueurs
       ),
     [piece]
   );
   const nbVisTotal = useMemo(
-    () => nbVisParLongueurs.reduce((acc, vis) => acc + vis, 0),
+    () => getTotal(nbVisParLongueurs),
     [nbVisParLongueurs]
   );
   const nbClousParLongueurs = useMemo(
     () =>
-      piece.longueurs.map(
-        (_, index) =>
-          2 *
-          (nbTassaux1VisParLongueurs[index] + nbTassaux2VisParLongueurs[index])
+      getNbClousParLongueurs(
+        piece,
+        nbTassaux1VisParLongueurs,
+        nbTassaux2VisParLongueurs
       ),
     [piece]
   );
