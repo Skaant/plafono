@@ -10,5 +10,5 @@ export type Piece = {
   tailleDesTassaux1Vis: number;
   tailleDesTassaux2Vis: number;
   tasseauIndex: number;
-  longueurs: Longueur[];
+  readonly longueurs: Longueur[];
 };

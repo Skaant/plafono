@@ -16,10 +16,13 @@ import { Clou } from "../types/produits/Clou";
 import { Vis } from "../types/produits/Vis";
 import { Tasseau } from "../types/produits/Tasseau";
 import { getTasseauxUneLongueur } from "../helpers/getTasseauxUneLongueur";
+import { Section } from "../types/Section";
+import { GetLongueurSectionsReturn } from "../helpers/getLongueurSections";
 
 export default function LongueursTable({
   piece,
   laineBois,
+  sectionsEtChutesLaineBois,
   plaqueOsb,
   tasseau,
   vis,
@@ -29,6 +32,7 @@ export default function LongueursTable({
 }: {
   piece: Piece;
   laineBois: LaineBois;
+  sectionsEtChutesLaineBois: GetLongueurSectionsReturn<LaineBois>[];
   plaqueOsb: PlaqueOsb;
   tasseau: Tasseau;
   vis: Vis;
@@ -37,8 +41,11 @@ export default function LongueursTable({
   setLongueursTableUi: (longueursTableUi: UIState) => void;
 }) {
   const nbLainesBoisParLongueurs = useMemo(
-    () => getNbItemsParLongueur(piece, plaqueOsb),
-    [piece]
+    () =>
+      sectionsEtChutesLaineBois.map(
+        (sectionsEtChutes) => sectionsEtChutes.sections.length
+      ),
+    [sectionsEtChutesLaineBois]
   );
   const nbLainesBoisTotal = useMemo(
     () => getTotal(nbLainesBoisParLongueurs),
@@ -164,8 +171,7 @@ export default function LongueursTable({
                 </th>
                 {longueursTableUi.lainesBoisChutes && (
                   <>
-                    <th>Chute laine Long</th>
-                    <th>Chute laine larg</th>
+                    <th>Chutes laine</th>
                   </>
                 )}
               </>
@@ -217,7 +223,8 @@ export default function LongueursTable({
               key={longueur.id}
               longueur={longueur}
               laineBois={laineBois}
-              nbLainesBois={nbLainesBoisParLongueurs[index]}
+              sectionsLainesBois={sectionsEtChutesLaineBois[index].sections}
+              chutesLainesBois={sectionsEtChutesLaineBois[index].reste}
               plaqueOsb={plaqueOsb}
               nbPlaquesOsb={nbPlaquesOsbParLongueurs[index]}
               nbTassaux1Vis={nbTassaux1VisParLongueurs[index]}
@@ -244,7 +251,6 @@ export default function LongueursTable({
                 </td>
                 {longueursTableUi.lainesBoisChutes && (
                   <>
-                    <td></td>
                     <td></td>
                   </>
                 )}

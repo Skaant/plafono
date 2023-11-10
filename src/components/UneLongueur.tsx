@@ -6,11 +6,13 @@ import { UIState } from "../types/ui/UIState";
 import { getTasseauxUneLongueur } from "../helpers/getTasseauxUneLongueur";
 import { Piece } from "../types/Piece";
 import { Tasseau } from "../types/produits/Tasseau";
+import { Section } from "../types/Section";
 
 export default function UneLongueur({
   longueur,
   laineBois,
-  nbLainesBois,
+  sectionsLainesBois,
+  chutesLainesBois,
   plaqueOsb,
   nbPlaquesOsb,
   nbTassaux1Vis,
@@ -23,7 +25,8 @@ export default function UneLongueur({
 }: {
   longueur: Longueur;
   laineBois: LaineBois;
-  nbLainesBois: number;
+  sectionsLainesBois: Section<LaineBois>[];
+  chutesLainesBois: Section<LaineBois>[];
   plaqueOsb: PlaqueOsb;
   nbPlaquesOsb: number;
   nbTassaux1Vis: number;
@@ -43,15 +46,21 @@ export default function UneLongueur({
       </td>
       {longueursTableUI.lainesBois && (
         <>
-          <td className="cell-md">{nbLainesBois}</td>
+          <td className="cell-md">
+            {sectionsLainesBois.map((section) => (
+              <div>
+                {section.id} {section.longueur}x{section.largeur}
+              </div>
+            ))}
+          </td>
           {longueursTableUI.lainesBoisChutes && (
             <>
               <td className="cell-md">
-                {laineBois.longueur - (longueur.longueur % laineBois.longueur)}
-              </td>
-              <td className="cell-md">
-                {laineBois.largeur - (longueur.largeurMax % laineBois.largeur)}/
-                {laineBois.largeur - (longueur.largeurMin % laineBois.largeur)}
+                {chutesLainesBois.map((section) => (
+                  <div>
+                    {section.id} {section.longueur}x{section.largeur}
+                  </div>
+                ))}
               </td>
             </>
           )}

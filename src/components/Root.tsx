@@ -11,6 +11,11 @@ import GlobalVariables from "./VariablesGlobales";
 import { TASSEAUX_DATA } from "../data/tasseaux.data";
 import RootSection from "./RootSection";
 import LongueursTableUIState from "./LongueursTableUIState";
+import { getLongueurSections } from "../helpers/getLongueurSections";
+import { Section } from "../types/Section";
+import { LaineBois } from "../types/produits/LaineBois";
+import SectionLaineBois from "./sections/SectionProduit";
+import { PlaqueOsb } from "../types/produits/PlaqueOsb";
 
 export default function Root() {
   const [piece, setPiece] = useState<Piece>(CUISINE_DATA);
@@ -26,9 +31,45 @@ export default function Root() {
     () => LAINES_BOIS_DATA[piece.laineBoisIndex],
     [piece.laineBoisIndex]
   );
+  const lainesBoisSectionsEtRestesParLongueurs = useMemo(
+    () =>
+      piece.longueurs.map((longueur) =>
+        getLongueurSections(longueur, laineBois)
+      ),
+    [laineBois]
+  );
+  const [lainesBoisSectionsTotal, lainesBoisChutesTotal] = useMemo(
+    () =>
+      lainesBoisSectionsEtRestesParLongueurs.reduce(
+        (acc, { sections, reste }) => [
+          [...acc[0], ...sections],
+          [...acc[1], ...reste],
+        ],
+        [[], []] as [Section<LaineBois>[], Section<LaineBois>[]]
+      ),
+    [lainesBoisSectionsEtRestesParLongueurs]
+  );
   const plaqueOsb = useMemo(
     () => PLAQUES_OSB_DATA[piece.plaqueOsbIndex],
     [piece.plaqueOsbIndex]
+  );
+  const plaquesOsbSectionsEtRestesParLongueurs = useMemo(
+    () =>
+      piece.longueurs.map((longueur) =>
+        getLongueurSections(longueur, plaqueOsb)
+      ),
+    [plaqueOsb]
+  );
+  const [plaquesOsbSectionsTotal, plaquesOsbChutesTotal] = useMemo(
+    () =>
+      plaquesOsbSectionsEtRestesParLongueurs.reduce(
+        (acc, { sections, reste }) => [
+          [...acc[0], ...sections],
+          [...acc[1], ...reste],
+        ],
+        [[], []] as [Section<PlaqueOsb>[], Section<PlaqueOsb>[]]
+      ),
+    [plaquesOsbSectionsEtRestesParLongueurs]
   );
   const vis = useMemo(() => VIS_DATA[piece.visIndex], [piece.visIndex]);
   const clou = useMemo(() => CLOUS_DATA[piece.clouIndex], [piece.clouIndex]);
@@ -58,6 +99,7 @@ export default function Root() {
           <LongueursTable
             piece={piece}
             laineBois={laineBois}
+            sectionsEtChutesLaineBois={lainesBoisSectionsEtRestesParLongueurs}
             plaqueOsb={plaqueOsb}
             tasseau={tasseau}
             vis={vis}
@@ -70,11 +112,34 @@ export default function Root() {
       <RootSection>
         <>
           <h2>La laine de bois</h2>
+          <h3>Sections</h3>
+          <div className="sections--container">
+            {lainesBoisSectionsTotal.map((section) => (
+              <SectionLaineBois key={section.id} section={section} />
+            ))}
+          </div>
+          <h3>Chutes</h3>
+          <div className="sections--container">
+            {lainesBoisChutesTotal.map((section) => (
+              <SectionLaineBois key={section.id} section={section} />
+            ))}
+          </div>
         </>
       </RootSection>
       <RootSection>
         <>
           <h2>Les plaques OSB</h2>
+          <div className="sections--container">
+            {plaquesOsbSectionsTotal.map((section) => (
+              <SectionLaineBois key={section.id} section={section} />
+            ))}
+          </div>
+          <br />
+          <div className="sections--container">
+            {plaquesOsbChutesTotal.map((section) => (
+              <SectionLaineBois key={section.id} section={section} />
+            ))}
+          </div>
         </>
       </RootSection>
     </div>
