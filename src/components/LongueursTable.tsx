@@ -16,7 +16,6 @@ import { Clou } from "../types/produits/Clou";
 import { Vis } from "../types/produits/Vis";
 import { Tasseau } from "../types/produits/Tasseau";
 import { getTasseauxUneLongueur } from "../helpers/getTasseauxUneLongueur";
-import { Section } from "../types/Section";
 import { GetLongueurSectionsReturn } from "../helpers/getLongueurSections";
 
 export default function LongueursTable({
@@ -24,6 +23,7 @@ export default function LongueursTable({
   laineBois,
   sectionsEtChutesLaineBois,
   plaqueOsb,
+  sectionsEtChutesPlaquesOsb,
   tasseau,
   vis,
   clou,
@@ -34,6 +34,7 @@ export default function LongueursTable({
   laineBois: LaineBois;
   sectionsEtChutesLaineBois: GetLongueurSectionsReturn<LaineBois>[];
   plaqueOsb: PlaqueOsb;
+  sectionsEtChutesPlaquesOsb: GetLongueurSectionsReturn<PlaqueOsb>[];
   tasseau: Tasseau;
   vis: Vis;
   clou: Clou;
@@ -195,8 +196,7 @@ export default function LongueursTable({
                 </th>
                 {longueursTableUi.plaquesOsbChutes && (
                   <>
-                    <th>Chute OSB Long</th>
-                    <th>Chute OSB larg</th>
+                    <th>Chutes OSB</th>
                   </>
                 )}
               </>
@@ -226,7 +226,8 @@ export default function LongueursTable({
               sectionsLainesBois={sectionsEtChutesLaineBois[index].sections}
               chutesLainesBois={sectionsEtChutesLaineBois[index].reste}
               plaqueOsb={plaqueOsb}
-              nbPlaquesOsb={nbPlaquesOsbParLongueurs[index]}
+              sectionsPlaquesOsb={sectionsEtChutesPlaquesOsb[index].sections}
+              chutesPlaquesOsb={sectionsEtChutesPlaquesOsb[index].reste}
               nbTassaux1Vis={nbTassaux1VisParLongueurs[index]}
               tailleDesTasseaux1Vis={piece.tailleDesTassaux1Vis}
               tasseau={tasseau}

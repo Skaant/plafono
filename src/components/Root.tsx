@@ -24,8 +24,8 @@ export default function Root() {
     lainesBoisChutes: false,
     plaquesOsb: true,
     plaquesOsbChutes: false,
-    tasseaux: true,
-    visEtClous: true,
+    tasseaux: false,
+    visEtClous: false,
   });
   const laineBois = useMemo(
     () => LAINES_BOIS_DATA[piece.laineBoisIndex],
@@ -100,6 +100,7 @@ export default function Root() {
             piece={piece}
             laineBois={laineBois}
             sectionsEtChutesLaineBois={lainesBoisSectionsEtRestesParLongueurs}
+            sectionsEtChutesPlaquesOsb={plaquesOsbSectionsEtRestesParLongueurs}
             plaqueOsb={plaqueOsb}
             tasseau={tasseau}
             vis={vis}
@@ -129,12 +130,13 @@ export default function Root() {
       <RootSection>
         <>
           <h2>Les plaques OSB</h2>
+          <h3>Sections</h3>
           <div className="sections--container">
             {plaquesOsbSectionsTotal.map((section) => (
               <SectionLaineBois key={section.id} section={section} />
             ))}
           </div>
-          <br />
+          <h3>Chutes</h3>
           <div className="sections--container">
             {plaquesOsbChutesTotal.map((section) => (
               <SectionLaineBois key={section.id} section={section} />

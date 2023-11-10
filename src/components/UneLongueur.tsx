@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { Longueur } from "../types/Longueur";
 import { LaineBois } from "../types/produits/LaineBois";
 import { PlaqueOsb } from "../types/produits/PlaqueOsb";
@@ -7,14 +7,14 @@ import { getTasseauxUneLongueur } from "../helpers/getTasseauxUneLongueur";
 import { Piece } from "../types/Piece";
 import { Tasseau } from "../types/produits/Tasseau";
 import { Section } from "../types/Section";
+import SectionProduit from "./sections/SectionProduit";
 
 export default function UneLongueur({
   longueur,
-  laineBois,
   sectionsLainesBois,
   chutesLainesBois,
-  plaqueOsb,
-  nbPlaquesOsb,
+  sectionsPlaquesOsb,
+  chutesPlaquesOsb,
   nbTassaux1Vis,
   tailleDesTasseaux1Vis,
   tasseau,
@@ -28,7 +28,8 @@ export default function UneLongueur({
   sectionsLainesBois: Section<LaineBois>[];
   chutesLainesBois: Section<LaineBois>[];
   plaqueOsb: PlaqueOsb;
-  nbPlaquesOsb: number;
+  sectionsPlaquesOsb: Section<PlaqueOsb>[];
+  chutesPlaquesOsb: Section<PlaqueOsb>[];
   nbTassaux1Vis: number;
   tailleDesTasseaux1Vis: Piece["tailleDesTassaux1Vis"];
   tasseau: Tasseau;
@@ -46,21 +47,21 @@ export default function UneLongueur({
       </td>
       {longueursTableUI.lainesBois && (
         <>
-          <td className="cell-md">
-            {sectionsLainesBois.map((section) => (
-              <div>
-                {section.id} {section.longueur}x{section.largeur}
-              </div>
-            ))}
+          <td>
+            <div className="cell-sections">
+              {sectionsLainesBois.map((section) => (
+                <SectionProduit section={section} />
+              ))}
+            </div>
           </td>
           {longueursTableUI.lainesBoisChutes && (
             <>
-              <td className="cell-md">
-                {chutesLainesBois.map((section) => (
-                  <div>
-                    {section.id} {section.longueur}x{section.largeur}
-                  </div>
-                ))}
+              <td>
+                <div className="cell-sections">
+                  {chutesLainesBois.map((section) => (
+                    <SectionProduit section={section} />
+                  ))}
+                </div>
               </td>
             </>
           )}
@@ -68,15 +69,21 @@ export default function UneLongueur({
       )}
       {longueursTableUI.plaquesOsb && (
         <>
-          <td className="cell-md">{nbPlaquesOsb}</td>
+          <td>
+            <div className="cell-sections">
+              {sectionsPlaquesOsb.map((section) => (
+                <SectionProduit section={section} />
+              ))}
+            </div>
+          </td>
           {longueursTableUI.plaquesOsbChutes && (
             <>
-              <td className="cell-md">
-                {plaqueOsb.longueur - (longueur.longueur % plaqueOsb.longueur)}
-              </td>
-              <td className="cell-md">
-                {plaqueOsb.largeur - (longueur.largeurMax % plaqueOsb.largeur)}/
-                {plaqueOsb.largeur - (longueur.largeurMin % plaqueOsb.largeur)}
+              <td>
+                <div className="cell-sections">
+                  {chutesPlaquesOsb.map((section) => (
+                    <SectionProduit section={section} />
+                  ))}
+                </div>
               </td>
             </>
           )}
