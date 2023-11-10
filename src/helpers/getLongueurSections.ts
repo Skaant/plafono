@@ -1,27 +1,21 @@
 import { Longueur } from "../types/Longueur";
 import { Section } from "../types/Section";
+import { SectionsEtChutes } from "../types/SectionsEtChutes";
 import { Produit as ProduitType } from "../types/produits/Produit";
-
-export type GetLongueurSectionsReturn<Produit> = {
-  id: string;
-  sections: Section<Produit>[];
-  reste: Section<Produit>[];
-  nbProduits: number;
-};
 
 export function getLongueurSections<Produit extends ProduitType>(
   longueur: Longueur,
-  produit: Produit,
-  chutes?: Section<Produit>[]
-): GetLongueurSectionsReturn<Produit> {
+  produit: Produit
+): SectionsEtChutes<Section<Produit>> {
   const sections: Section<Produit>[] = [];
-  const reste: Section<Produit>[] = [];
+  const chutes: Section<Produit>[] = [];
   let _longueurToFill = longueur.longueur;
   let nbProduits = 0;
   while (_longueurToFill) {
     if (produit.longueur > _longueurToFill) {
-      reste.push({
-        id: `${longueur.id}-${reste.length + 1}`,
+      chutes.push({
+        id: `${longueur.id}-${chutes.length + 1}`,
+        parent: longueur,
         produit,
         produitIndex: nbProduits + 1,
         longueur: produit.longueur - _longueurToFill,
@@ -42,7 +36,7 @@ export function getLongueurSections<Produit extends ProduitType>(
   return {
     id: `${longueur.id}-${produit.nom}`,
     sections,
-    reste,
+    chutes,
     nbProduits,
   };
 }

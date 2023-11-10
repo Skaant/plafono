@@ -1,11 +1,11 @@
 import React from "react";
-import { Section as SectionType } from "../../types/Section";
 import { Produit } from "../../types/produits/Produit";
+import { SectionChutesFixed } from "../../types/SectionChutesFixed";
 
 export default function SectionProduit({
   section,
 }: {
-  section: SectionType<Produit>;
+  section: SectionChutesFixed<Produit>;
 }) {
   const produitMax = Math.max(section.produit.longueur, section.produit.largeur)
     ? "longueur"
@@ -34,7 +34,7 @@ export default function SectionProduit({
       ? 100 - produitMinDiff / 2 - sectionDiff
       : 100 - produitMinDiff / 2;
   return (
-    <div className="section">
+    <div className={`section${section.fromChuteId ? " section--chute" : ""}`}>
       <div className="section--proportions">
         <div>
           <svg viewBox="0 0 100 100">
@@ -58,6 +58,13 @@ export default function SectionProduit({
       </div>
       <div>
         {section.id} {section.longueur}x{section.largeur}
+        {section.usedChuteId
+          ? ` (utilise la chute ${section.usedChuteId})`
+          : ""}
+        {section.usedInSectionId
+          ? ` (est utilisée par section ${section.usedInSectionId})`
+          : ""}
+        {section.fromChuteId ? ` (reste de ${section.fromChuteId})` : ""}
       </div>
     </div>
   );

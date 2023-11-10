@@ -16,7 +16,8 @@ import { Clou } from "../types/produits/Clou";
 import { Vis } from "../types/produits/Vis";
 import { Tasseau } from "../types/produits/Tasseau";
 import { getTasseauxUneLongueur } from "../helpers/getTasseauxUneLongueur";
-import { GetLongueurSectionsReturn } from "../helpers/getLongueurSections";
+import { SectionsEtChutes } from "../types/SectionsEtChutes";
+import { SectionChutesFixed } from "../types/SectionChutesFixed";
 
 export default function LongueursTable({
   piece,
@@ -32,25 +33,25 @@ export default function LongueursTable({
 }: {
   piece: Piece;
   laineBois: LaineBois;
-  sectionsEtChutesLaineBois: GetLongueurSectionsReturn<LaineBois>[];
+  sectionsEtChutesLaineBois: SectionsEtChutes<SectionChutesFixed<LaineBois>>[];
   plaqueOsb: PlaqueOsb;
-  sectionsEtChutesPlaquesOsb: GetLongueurSectionsReturn<PlaqueOsb>[];
+  sectionsEtChutesPlaquesOsb: SectionsEtChutes<SectionChutesFixed<PlaqueOsb>>[];
   tasseau: Tasseau;
   vis: Vis;
   clou: Clou;
   longueursTableUi: UIState;
   setLongueursTableUi: (longueursTableUi: UIState) => void;
 }) {
-  const nbLainesBoisParLongueurs = useMemo(
+  const nbLainesBoisTotal = useMemo(
     () =>
-      sectionsEtChutesLaineBois.map(
-        (sectionsEtChutes) => sectionsEtChutes.sections.length
+      getTotal(
+        sectionsEtChutesLaineBois.map(
+          (sectionsEtChutes) =>
+            sectionsEtChutes.sections.filter(({ usedChuteId }) => !usedChuteId)
+              .length
+        )
       ),
     [sectionsEtChutesLaineBois]
-  );
-  const nbLainesBoisTotal = useMemo(
-    () => getTotal(nbLainesBoisParLongueurs),
-    [nbLainesBoisParLongueurs]
   );
   const nbLotsLaineBois = useMemo(
     () => getNombreDeLots(nbLainesBoisTotal, laineBois.lot),
@@ -61,8 +62,12 @@ export default function LongueursTable({
     [nbLotsLaineBois, laineBois]
   );
   const nbPlaquesOsbParLongueurs = useMemo(
-    () => getNbPlaquesOsbParLongueurs(piece, plaqueOsb),
-    [piece]
+    () =>
+      sectionsEtChutesPlaquesOsb.map(
+        ({ sections }) =>
+          sections.filter(({ usedChuteId }) => !usedChuteId).length
+      ),
+    [sectionsEtChutesPlaquesOsb]
   );
   const nbPlaquesOsbTotal = useMemo(
     () => getTotal(nbPlaquesOsbParLongueurs),
@@ -224,10 +229,10 @@ export default function LongueursTable({
               longueur={longueur}
               laineBois={laineBois}
               sectionsLainesBois={sectionsEtChutesLaineBois[index].sections}
-              chutesLainesBois={sectionsEtChutesLaineBois[index].reste}
+              chutesLainesBois={sectionsEtChutesLaineBois[index].chutes}
               plaqueOsb={plaqueOsb}
               sectionsPlaquesOsb={sectionsEtChutesPlaquesOsb[index].sections}
-              chutesPlaquesOsb={sectionsEtChutesPlaquesOsb[index].reste}
+              chutesPlaquesOsb={sectionsEtChutesPlaquesOsb[index].chutes}
               nbTassaux1Vis={nbTassaux1VisParLongueurs[index]}
               tailleDesTasseaux1Vis={piece.tailleDesTassaux1Vis}
               tasseau={tasseau}

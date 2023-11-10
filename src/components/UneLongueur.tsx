@@ -6,8 +6,8 @@ import { UIState } from "../types/ui/UIState";
 import { getTasseauxUneLongueur } from "../helpers/getTasseauxUneLongueur";
 import { Piece } from "../types/Piece";
 import { Tasseau } from "../types/produits/Tasseau";
-import { Section } from "../types/Section";
 import SectionProduit from "./sections/SectionProduit";
+import { SectionChutesFixed } from "../types/SectionChutesFixed";
 
 export default function UneLongueur({
   longueur,
@@ -25,11 +25,11 @@ export default function UneLongueur({
 }: {
   longueur: Longueur;
   laineBois: LaineBois;
-  sectionsLainesBois: Section<LaineBois>[];
-  chutesLainesBois: Section<LaineBois>[];
+  sectionsLainesBois: SectionChutesFixed<LaineBois>[];
+  chutesLainesBois: SectionChutesFixed<LaineBois>[];
   plaqueOsb: PlaqueOsb;
-  sectionsPlaquesOsb: Section<PlaqueOsb>[];
-  chutesPlaquesOsb: Section<PlaqueOsb>[];
+  sectionsPlaquesOsb: SectionChutesFixed<PlaqueOsb>[];
+  chutesPlaquesOsb: SectionChutesFixed<PlaqueOsb>[];
   nbTassaux1Vis: number;
   tailleDesTasseaux1Vis: Piece["tailleDesTassaux1Vis"];
   tasseau: Tasseau;

@@ -16,6 +16,7 @@ import { Section } from "../types/Section";
 import { LaineBois } from "../types/produits/LaineBois";
 import SectionLaineBois from "./sections/SectionProduit";
 import { PlaqueOsb } from "../types/produits/PlaqueOsb";
+import { fixLongueursSectionsWithChutes } from "../helpers/fixLongueursSectionsWithChutes";
 
 export default function Root() {
   const [piece, setPiece] = useState<Piece>(CUISINE_DATA);
@@ -31,45 +32,25 @@ export default function Root() {
     () => LAINES_BOIS_DATA[piece.laineBoisIndex],
     [piece.laineBoisIndex]
   );
-  const lainesBoisSectionsEtRestesParLongueurs = useMemo(
-    () =>
-      piece.longueurs.map((longueur) =>
-        getLongueurSections(longueur, laineBois)
-      ),
+  const {
+    chutesTotal: lainesBoisChutesTotal,
+    sectionsTotal: lainesBoisSectionsTotal,
+    sectionsEtChutes: lainesBoisSectionsEtChutesParLongueurs,
+  } = useMemo(
+    () => fixLongueursSectionsWithChutes<LaineBois>(piece, laineBois),
     [laineBois]
-  );
-  const [lainesBoisSectionsTotal, lainesBoisChutesTotal] = useMemo(
-    () =>
-      lainesBoisSectionsEtRestesParLongueurs.reduce(
-        (acc, { sections, reste }) => [
-          [...acc[0], ...sections],
-          [...acc[1], ...reste],
-        ],
-        [[], []] as [Section<LaineBois>[], Section<LaineBois>[]]
-      ),
-    [lainesBoisSectionsEtRestesParLongueurs]
   );
   const plaqueOsb = useMemo(
     () => PLAQUES_OSB_DATA[piece.plaqueOsbIndex],
     [piece.plaqueOsbIndex]
   );
-  const plaquesOsbSectionsEtRestesParLongueurs = useMemo(
-    () =>
-      piece.longueurs.map((longueur) =>
-        getLongueurSections(longueur, plaqueOsb)
-      ),
+  const {
+    chutesTotal: plaquesOsbChutesTotal,
+    sectionsTotal: plaquesOsbSectionsTotal,
+    sectionsEtChutes: plaquesOsbSectionsEtRestesParLongueurs,
+  } = useMemo(
+    () => fixLongueursSectionsWithChutes<PlaqueOsb>(piece, plaqueOsb),
     [plaqueOsb]
-  );
-  const [plaquesOsbSectionsTotal, plaquesOsbChutesTotal] = useMemo(
-    () =>
-      plaquesOsbSectionsEtRestesParLongueurs.reduce(
-        (acc, { sections, reste }) => [
-          [...acc[0], ...sections],
-          [...acc[1], ...reste],
-        ],
-        [[], []] as [Section<PlaqueOsb>[], Section<PlaqueOsb>[]]
-      ),
-    [plaquesOsbSectionsEtRestesParLongueurs]
   );
   const vis = useMemo(() => VIS_DATA[piece.visIndex], [piece.visIndex]);
   const clou = useMemo(() => CLOUS_DATA[piece.clouIndex], [piece.clouIndex]);
@@ -99,7 +80,7 @@ export default function Root() {
           <LongueursTable
             piece={piece}
             laineBois={laineBois}
-            sectionsEtChutesLaineBois={lainesBoisSectionsEtRestesParLongueurs}
+            sectionsEtChutesLaineBois={lainesBoisSectionsEtChutesParLongueurs}
             sectionsEtChutesPlaquesOsb={plaquesOsbSectionsEtRestesParLongueurs}
             plaqueOsb={plaqueOsb}
             tasseau={tasseau}
