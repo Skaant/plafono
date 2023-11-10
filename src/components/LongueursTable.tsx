@@ -1,8 +1,4 @@
 import React, { useMemo } from "react";
-import { CLOUS_DATA } from "../data/clous.data";
-import { LAINES_BOIS_DATA } from "../data/laines-bois.data";
-import { PLAQUES_OSB_DATA } from "../data/plaques-osb.data";
-import { VIS_DATA } from "../data/vis.data";
 import { getNbClousParLongueurs } from "../helpers/getNbClousParLongueurs";
 import { getNbItemsParLongueur } from "../helpers/getNbItemsParLongueur";
 import { getNbPlaquesOsbParLongueurs } from "../helpers/getNbPlaquesOsbParLongueurs";
@@ -14,24 +10,32 @@ import { getTotal } from "../helpers/getTotal";
 import { Piece } from "../types/Piece";
 import { LaineBois } from "../types/produits/LaineBois";
 import { PlaqueOsb } from "../types/produits/PlaqueOsb";
-import { LongueursTableUI } from "../types/ui/LongueursTableUI";
+import { UIState } from "../types/ui/UIState";
 import UneLongueur from "./UneLongueur";
+import { Clou } from "../types/produits/Clou";
+import { Vis } from "../types/produits/Vis";
+import { Tasseau } from "../types/produits/Tasseau";
+import { getTasseauxUneLongueur } from "../helpers/getTasseauxUneLongueur";
 
 export default function LongueursTable({
   piece,
   laineBois,
   plaqueOsb,
+  tasseau,
+  vis,
+  clou,
   longueursTableUi,
   setLongueursTableUi,
 }: {
   piece: Piece;
   laineBois: LaineBois;
   plaqueOsb: PlaqueOsb;
-  longueursTableUi: LongueursTableUI;
-  setLongueursTableUi: (longueursTableUi: LongueursTableUI) => void;
+  tasseau: Tasseau;
+  vis: Vis;
+  clou: Clou;
+  longueursTableUi: UIState;
+  setLongueursTableUi: (longueursTableUi: UIState) => void;
 }) {
-  const vis = useMemo(() => VIS_DATA[piece.visIndex], [piece.visIndex]);
-  const clou = useMemo(() => CLOUS_DATA[piece.clouIndex], [piece.clouIndex]);
   const nbLainesBoisParLongueurs = useMemo(
     () => getNbItemsParLongueur(piece, plaqueOsb),
     [piece]
@@ -67,6 +71,17 @@ export default function LongueursTable({
   const nbTassaux1VisParLongueurs = useMemo(
     () =>
       getNbTassaux1VisParLongueurs(piece, nbPlaquesOsbParLongueurs, plaqueOsb),
+    [piece]
+  );
+  const tasseaux1VisParLongueurs = useMemo(
+    () =>
+      piece.longueurs.map((longueur, index) =>
+        getTasseauxUneLongueur(
+          nbTassaux1VisParLongueurs[index],
+          piece.tailleDesTassaux1Vis,
+          tasseau
+        )
+      ),
     [piece]
   );
   const nbTassaux1VisTotal = useMemo(
@@ -124,134 +139,171 @@ export default function LongueursTable({
     [nbLotsClous, clou]
   );
   return (
-    <table id="longueurs-table">
-      <thead>
-        <tr>
-          <th>°</th>
-          <th>Longueur</th>
-          <th>largeur</th>
-          <th>
-            Nb laines bois
-            <br />
-            <input
-              checked={longueursTableUi.lainesBoisChutes}
-              onChange={(e) =>
-                setLongueursTableUi({
-                  ...longueursTableUi,
-                  lainesBoisChutes: e.target.checked,
-                })
-              }
-              type="checkbox"
-            />{" "}
-            Chutes
-          </th>
-          {longueursTableUi.lainesBoisChutes && (
-            <>
-              <th>Chute laine Long</th>
-              <th>Chute laine larg</th>
-            </>
-          )}
-          <th>
-            Nb plaques OSB
-            <br />
-            <input
-              checked={longueursTableUi.plaquesOsbChutes}
-              onChange={(e) =>
-                setLongueursTableUi({
-                  ...longueursTableUi,
-                  plaquesOsbChutes: e.target.checked,
-                })
-              }
-              type="checkbox"
-            />{" "}
-            Chutes
-          </th>
-          {longueursTableUi.plaquesOsbChutes && (
-            <>
-              <th>Chute OSB Long</th>
-              <th>Chute OSB larg</th>
-            </>
-          )}
-          <th>Nb tassaux 1 vis</th>
-          <th>Nb tassaux 2 vis</th>
-          <th>Nb vis</th>
-          <th>Nb clous</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        {piece.longueurs.map((longueur, index) => (
-          <UneLongueur
-            key={longueur.id}
-            index={index}
-            longueur={longueur}
-            laineBois={laineBois}
-            nbLainesBois={nbLainesBoisParLongueurs[index]}
-            plaqueOsb={plaqueOsb}
-            nbPlaquesOsb={nbPlaquesOsbParLongueurs[index]}
-            nbTassaux1Vis={nbTassaux1VisParLongueurs[index]}
-            nbTassaux2Vis={nbTassaux2VisParLongueurs[index]}
-            nbVis={nbVisParLongueurs[index]}
-            nbClous={nbClousParLongueurs[index]}
-            longueursTableUI={longueursTableUi}
-          />
-        ))}
-        <tr>
-          <td>Total</td>
-          <td></td>
-          <td></td>
-          <td className="cell-md">
-            {nbLotsLaineBois > 0 && laineBois.lot
-              ? `(${nbLainesBoisTotal} => ${nbLotsLaineBois} lot(s) de ${laineBois.lot}) `
-              : ""}
-            <br />
-            {nbLotsLaineBois * (laineBois.lot || 1)} = {prixLotsLaineBoisTotal}€
-          </td>
-          {longueursTableUi.lainesBoisChutes && (
-            <>
-              <td></td>
-              <td></td>
-            </>
-          )}
-          <td className="cell-md">
-            {nbLotsPlaquesOsb > 0 && plaqueOsb.lot
-              ? `(${nbPlaquesOsbTotal} => ${nbLotsPlaquesOsb} lot(s) de ${plaqueOsb.lot}) `
-              : ""}
-            <br />
-            {nbLotsPlaquesOsb * (plaqueOsb.lot || 1)} ={" "}
-            {prixLotsPlaquesOsbTotal}€
-          </td>
-          {longueursTableUi.plaquesOsbChutes && (
-            <>
-              <td></td>
-              <td></td>
-            </>
-          )}
-          <td className="cell-md">{nbTassaux1VisTotal}</td>
-          <td className="cell-md">{nbTassaux2VisTotal}</td>
-          <td className="cell-md">
-            {nbLotsVis > 0 && vis.lot
-              ? `(${nbVisTotal} => ${nbLotsVis} lot(s) de ${vis.lot}) `
-              : ""}
-            <br />
-            {nbLotsVis * (vis.lot || 1)} = {prixLotsVisTotal}€
-          </td>
-          <td className="cell-md">
-            {nbLotsClous > 0 && clou.lot
-              ? `(${nbClousTotal} => ${nbLotsClous} lot(s) de ${clou.lot}) `
-              : ""}
-            <br />
-            {nbLotsClous * (clou.lot || 1)} = {prixLotsClousTotal}€
-          </td>
-          <td>
-            {prixLotsLaineBoisTotal +
-              prixLotsPlaquesOsbTotal +
-              prixLotsVisTotal +
-              prixLotsClousTotal}
-            €
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div id="longueurs-table--container">
+      <table id="longueurs-table">
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>Dimension</th>
+            {longueursTableUi.lainesBois && (
+              <>
+                <th>
+                  Nb laines bois
+                  <br />
+                  <input
+                    checked={longueursTableUi.lainesBoisChutes}
+                    onChange={(e) =>
+                      setLongueursTableUi({
+                        ...longueursTableUi,
+                        lainesBoisChutes: e.target.checked,
+                      })
+                    }
+                    type="checkbox"
+                  />{" "}
+                  Chutes
+                </th>
+                {longueursTableUi.lainesBoisChutes && (
+                  <>
+                    <th>Chute laine Long</th>
+                    <th>Chute laine larg</th>
+                  </>
+                )}
+              </>
+            )}
+            {longueursTableUi.plaquesOsb && (
+              <>
+                <th>
+                  Nb plaques OSB
+                  <br />
+                  <input
+                    checked={longueursTableUi.plaquesOsbChutes}
+                    onChange={(e) =>
+                      setLongueursTableUi({
+                        ...longueursTableUi,
+                        plaquesOsbChutes: e.target.checked,
+                      })
+                    }
+                    type="checkbox"
+                  />{" "}
+                  Chutes
+                </th>
+                {longueursTableUi.plaquesOsbChutes && (
+                  <>
+                    <th>Chute OSB Long</th>
+                    <th>Chute OSB larg</th>
+                  </>
+                )}
+              </>
+            )}
+            {longueursTableUi.tasseaux && (
+              <>
+                <th>Nb tasseaux 1 vis</th>
+                <th>Nb tasseaux 2 vis</th>
+                <th>Tasseaux props</th>
+              </>
+            )}
+            {longueursTableUi.visEtClous && (
+              <>
+                <th>Nb vis</th>
+                <th>Nb clous</th>
+              </>
+            )}
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {piece.longueurs.map((longueur, index) => (
+            <UneLongueur
+              key={longueur.id}
+              longueur={longueur}
+              laineBois={laineBois}
+              nbLainesBois={nbLainesBoisParLongueurs[index]}
+              plaqueOsb={plaqueOsb}
+              nbPlaquesOsb={nbPlaquesOsbParLongueurs[index]}
+              nbTassaux1Vis={nbTassaux1VisParLongueurs[index]}
+              tailleDesTasseaux1Vis={piece.tailleDesTassaux1Vis}
+              tasseau={tasseau}
+              nbTassaux2Vis={nbTassaux2VisParLongueurs[index]}
+              nbVis={nbVisParLongueurs[index]}
+              nbClous={nbClousParLongueurs[index]}
+              longueursTableUI={longueursTableUi}
+            />
+          ))}
+          <tr>
+            <td>Total</td>
+            <td></td>
+            {longueursTableUi.lainesBois && (
+              <>
+                <td className="cell-md">
+                  {nbLotsLaineBois > 0 && laineBois.lot
+                    ? `(${nbLainesBoisTotal} => ${nbLotsLaineBois} lot(s) de ${laineBois.lot}) `
+                    : ""}
+                  <br />
+                  {nbLotsLaineBois * (laineBois.lot || 1)} ={" "}
+                  {prixLotsLaineBoisTotal}€
+                </td>
+                {longueursTableUi.lainesBoisChutes && (
+                  <>
+                    <td></td>
+                    <td></td>
+                  </>
+                )}
+              </>
+            )}
+            {longueursTableUi.plaquesOsb && (
+              <>
+                <td className="cell-md">
+                  {nbLotsPlaquesOsb > 0 && plaqueOsb.lot
+                    ? `(${nbPlaquesOsbTotal} => ${nbLotsPlaquesOsb} lot(s) de ${plaqueOsb.lot}) `
+                    : ""}
+                  <br />
+                  {nbLotsPlaquesOsb * (plaqueOsb.lot || 1)} ={" "}
+                  {prixLotsPlaquesOsbTotal}€
+                </td>
+                {longueursTableUi.plaquesOsbChutes && (
+                  <>
+                    <td></td>
+                    <td></td>
+                  </>
+                )}
+              </>
+            )}
+            {longueursTableUi.tasseaux && (
+              <>
+                <td className="cell-md">{nbTassaux1VisTotal}</td>
+                <td className="cell-md">{nbTassaux2VisTotal}</td>
+              </>
+            )}
+            {longueursTableUi.visEtClous && (
+              <>
+                <td className="cell-md">
+                  {nbLotsVis > 0 && vis.lot
+                    ? `(${nbVisTotal} => ${nbLotsVis} lot(s) de ${vis.lot}) `
+                    : ""}
+                  <br />
+                  {nbLotsVis * (vis.lot || 1)} = {prixLotsVisTotal}€
+                </td>
+                <td className="cell-md">
+                  {nbLotsClous > 0 && clou.lot
+                    ? `(${nbClousTotal} => ${nbLotsClous} lot(s) de ${clou.lot}) `
+                    : ""}
+                  <br />
+                  {nbLotsClous * (clou.lot || 1)} = {prixLotsClousTotal}€
+                </td>
+              </>
+            )}
+            <td>
+              {(
+                prixLotsLaineBoisTotal +
+                prixLotsPlaquesOsbTotal +
+                prixLotsVisTotal +
+                prixLotsClousTotal
+              ).toFixed(2)}
+              €
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   );
 }

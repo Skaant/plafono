@@ -2,12 +2,14 @@ import { Piece } from "../types/Piece";
 
 export const CUISINE_DATA: Piece = {
   nom: "Cuisine",
-  nombreLongueurs: 8,
   laineBoisIndex: 0,
   plaqueOsbIndex: 0,
+  distanceEntreTassaux: 30,
+  tailleDesTassaux1Vis: 15,
+  tailleDesTassaux2Vis: 20,
+  tasseauIndex: 0,
   visIndex: 0,
   clouIndex: 0,
-  distanceEntreTassaux: 30,
   longueurs: [
     {
       id: 1,

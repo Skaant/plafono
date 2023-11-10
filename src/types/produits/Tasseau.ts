@@ -1,4 +1,4 @@
 import { Produit } from "./Produit";
 import { EpaisseurTrait } from "./_traits/Epaisseur.trait";
 
-export type PlaqueOsb = Produit & EpaisseurTrait;
+export type Tasseau = Produit & EpaisseurTrait;
